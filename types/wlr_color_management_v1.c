@@ -5,6 +5,7 @@
 #include <wlr/types/wlr_compositor.h>
 #include <wlr/types/wlr_output.h>
 #include <wlr/util/addon.h>
+#include <wlr/util/mem.h>
 
 #include "render/color.h"
 
@@ -896,17 +897,6 @@ static void manager_handle_display_destroy(struct wl_listener *listener, void *d
 	free(manager->transfer_functions);
 	free(manager->primaries);
 	free(manager);
-}
-
-static bool memdup(void *out, const void *src, size_t size) {
-	void *dst = malloc(size);
-	if (dst == NULL) {
-		return false;
-	}
-	memcpy(dst, src, size);
-	void **dst_ptr = out;
-	*dst_ptr = dst;
-	return true;
 }
 
 struct wlr_color_manager_v1 *wlr_color_manager_v1_create(struct wl_display *display,
