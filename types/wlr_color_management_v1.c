@@ -9,6 +9,7 @@
 
 #include "color-management-v1-protocol.h"
 #include "render/color.h"
+#include "types/wlr_color_management_v1.h"
 #include "util/mem.h"
 
 #define COLOR_MANAGEMENT_V1_VERSION 1
@@ -65,19 +66,25 @@ static void resource_handle_destroy(struct wl_client *client, struct wl_resource
 	wl_resource_destroy(resource);
 }
 
-static enum wlr_color_named_primaries named_primaries_to_wlr(
-		enum wp_color_manager_v1_primaries primaries) {
+uint32_t named_primaries_try_to_wlr(enum wp_color_manager_v1_primaries primaries) {
 	switch (primaries) {
 	case WP_COLOR_MANAGER_V1_PRIMARIES_SRGB:
 		return WLR_COLOR_NAMED_PRIMARIES_SRGB;
 	case WP_COLOR_MANAGER_V1_PRIMARIES_BT2020:
 		return WLR_COLOR_NAMED_PRIMARIES_BT2020;
 	default:
-		abort();
+		return 0; // unsupported
 	}
 }
 
-static enum wp_color_manager_v1_primaries named_primaries_from_wlr(
+static enum wlr_color_named_primaries named_primaries_to_wlr(
+		enum wp_color_manager_v1_primaries primaries) {
+	uint32_t wlr_primaries = named_primaries_try_to_wlr(primaries);
+	assert(wlr_primaries != 0);
+	return wlr_primaries;
+}
+
+enum wp_color_manager_v1_primaries named_primaries_from_wlr(
 		enum wlr_color_named_primaries primaries) {
 	switch (primaries) {
 	case WLR_COLOR_NAMED_PRIMARIES_SRGB:
@@ -88,8 +95,7 @@ static enum wp_color_manager_v1_primaries named_primaries_from_wlr(
 	abort();
 }
 
-static enum wlr_color_transfer_function transfer_function_to_wlr(
-		enum wp_color_manager_v1_transfer_function tf) {
+uint32_t transfer_function_try_to_wlr(enum wp_color_manager_v1_transfer_function tf) {
 	switch (tf) {
 	case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB:
 		return WLR_COLOR_TRANSFER_FUNCTION_SRGB;
@@ -98,11 +104,18 @@ static enum wlr_color_transfer_function transfer_function_to_wlr(
 	case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_EXT_LINEAR:
 		return WLR_COLOR_TRANSFER_FUNCTION_EXT_LINEAR;
 	default:
-		abort();
+		return 0;
 	}
 }
 
-static enum wp_color_manager_v1_transfer_function transfer_function_from_wlr(
+static enum wlr_color_transfer_function transfer_function_to_wlr(
+		enum wp_color_manager_v1_transfer_function tf) {
+	uint32_t tf_wlr = transfer_function_try_to_wlr(tf);
+	assert(tf != 0);
+	return tf_wlr;
+}
+
+enum wp_color_manager_v1_transfer_function transfer_function_from_wlr(
 		enum wlr_color_transfer_function tf) {
 	switch (tf) {
 	case WLR_COLOR_TRANSFER_FUNCTION_SRGB:
