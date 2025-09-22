@@ -53,7 +53,14 @@ struct wlr_wl_backend {
 	struct xdg_activation_v1 *activation_v1;
 	struct wl_subcompositor *subcompositor;
 	struct wp_viewporter *viewporter;
+	struct wp_color_manager_v1 *color_manager_v1;
 	char *drm_render_name;
+	uint32_t supported_tfs; // bitfield of enum wlr_color_transfer_function
+	uint32_t supported_primaries; // bitfield of enum wlr_color_named_primaries
+	struct {
+		bool parametric;
+		bool set_mastering_display_primaries;
+	} color_manager_v1_features;
 };
 
 struct wlr_wl_buffer {
@@ -106,6 +113,7 @@ struct wlr_wl_output {
 	struct xdg_toplevel *xdg_toplevel;
 	struct zxdg_toplevel_decoration_v1 *zxdg_toplevel_decoration_v1;
 	struct wp_linux_drm_syncobj_surface_v1 *drm_syncobj_surface_v1;
+	struct wp_color_management_surface_v1 *color_management_surface_v1;
 	struct wl_list presentation_feedbacks;
 
 	char *title;
