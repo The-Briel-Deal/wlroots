@@ -24,7 +24,7 @@ layout (constant_id = 0) const int OUTPUT_TRANSFORM = 0;
 #define OUTPUT_TRANSFORM_LUT_3D 3
 
 float linear_channel_to_srgb(float x) {
-	return max(min(x * 12.92, 0.04045), 1.055 * pow(x, 1. / 2.4) - 0.055);
+	return (x >= 0.0031308) ? (1.055 * pow(x, 1. / 2.4) - 0.055) : (12.92 * x);
 }
 
 vec3 linear_color_to_srgb(vec3 color) {
