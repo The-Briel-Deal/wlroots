@@ -80,7 +80,7 @@ static int libseat_session_init(struct wlr_session *session,
 
 	session->seat_handle = libseat_open_seat(&seat_listener, session);
 	if (session->seat_handle == NULL) {
-		wlr_log_errno(WLR_ERROR, "Unable to create seat");
+		wlr_log_errno(WLR_ERROR, "Unable to create seat: %s", strerror(errno));
 		return -1;
 	}
 
@@ -101,7 +101,7 @@ static int libseat_session_init(struct wlr_session *session,
 	// We may have received enable_seat immediately after the open_seat result,
 	// so, dispatch once without timeout to speed up activation.
 	if (libseat_dispatch(session->seat_handle, 0) == -1) {
-		wlr_log_errno(WLR_ERROR, "libseat dispatch failed");
+		wlr_log_errno(WLR_ERROR, "libseat dispatch failed: %s", strerror(errno));
 		goto error_dispatch;
 	}
 
@@ -328,7 +328,7 @@ struct wlr_device *wlr_session_open_file(struct wlr_session *session,
 	int fd;
 	int device_id = libseat_open_device(session->seat_handle, path, &fd);
 	if (device_id == -1) {
-		wlr_log_errno(WLR_ERROR, "Failed to open device: '%s'", path);
+		wlr_log_errno(WLR_ERROR, "Failed to open device: '%s', error: '%s'", path, strerror(errno));
 		return NULL;
 	}
 
